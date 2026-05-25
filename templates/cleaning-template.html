@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotless Home Cleaning — Sparkling Clean. Every Time.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #0a84ff;
+      --accent-dark: color-mix(in oklab, var(--accent) 72%, black);
+      --accent-light: color-mix(in oklab, var(--accent) 10%, white);
+      --text: #0d1f38;
+      --text-2: #4a6078;
+      --bg: #ffffff;
+      --bg-tint: #f0f7ff;
+      --border: #cfe2f9;
+      --font: 'Plus Jakarta Sans', sans-serif;
+      --radius-btn: 0px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── CONTAINER ─────────────────── */
+    .container {
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ── TYPOGRAPHY HELPERS ─────────── */
+    .label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.028em;
+      line-height: 1.18;
+      text-align: center;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .section-sub {
+      font-size: 1.02rem;
+      color: var(--text-2);
+      line-height: 1.75;
+      text-align: center;
+      max-width: 520px;
+      margin: 0 auto 60px;
+    }
+
+    /* ── BUTTON ─────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 2px solid transparent;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s,
+                  transform 0.18s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px color-mix(in oklab, var(--accent) 40%, transparent);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: transparent;
+    }
+
+    .btn-ghost:hover { color: var(--accent); }
+
+    /* ── NAV ────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 66px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    nav.is-scrolled {
+      border-color: var(--border);
+      box-shadow: 0 2px 28px rgba(10,100,220,0.07);
+    }
+
+    .nav-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-logo {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.025em;
+      flex-shrink: 0;
+    }
+
+    .nav-logo em { font-style: normal; color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.87rem;
+      font-weight: 500;
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta { padding: 9px 20px; font-size: 0.85rem; }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ── HERO ───────────────────────── */
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      padding: 112px 28px 100px;
+      background: linear-gradient(155deg, #f6fbff 0%, #eaf4ff 50%, #dceeff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -15%;
+      right: -8%;
+      width: 680px;
+      height: 680px;
+      background: radial-gradient(circle, rgba(10,132,255,0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 10%;
+      left: -5%;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(10,132,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 72px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      background: color-mix(in oklab, var(--accent) 10%, white);
+      color: var(--accent);
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: breathe 2.2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.65); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.3rem, 5vw, 3.75rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      margin-bottom: 22px;
+    }
+
+    /* ── SHIMMER ── */
+    .shimmer {
+      display: inline;
+      background: linear-gradient(
+        100deg,
+        var(--text) 0%,
+        var(--text) 28%,
+        #5db8ff 41%,
+        #c9e9ff 48%,
+        #5db8ff 55%,
+        var(--text) 68%,
+        var(--text) 100%
+      );
+      background-size: 220% auto;
+      background-position: 110% center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerSweep 1.9s cubic-bezier(0.4,0,0.2,1) 0.5s 1 forwards;
+    }
+
+    @keyframes shimmerSweep {
+      from { background-position: 110% center; }
+      to   { background-position: -10% center; }
+    }
+
+    .hero-sub {
+      font-size: 1.12rem;
+      color: var(--text-2);
+      line-height: 1.8;
+      margin-bottom: 38px;
+      max-width: 430px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions .btn-primary { padding: 16px 30px; font-size: 1rem; }
+
+    .hero-trust-row {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .hero-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .hero-trust-item svg { color: var(--accent); flex-shrink: 0; }
+
+    /* Hero visual */
+    .hero-visual { position: relative; }
+
+    .hero-img-wrap {
+      border-radius: 22px;
+      overflow: hidden;
+      aspect-ratio: 5/4;
+      background: white;
+      box-shadow: 0 24px 80px rgba(10,80,200,0.14), 0 4px 20px rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    .img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #e8f4ff 0px, #e8f4ff 10px,
+        #f2f9ff 10px, #f2f9ff 20px
+      );
+    }
+
+    .img-placeholder-label {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #97b5cc;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Floating accent cards */
+    .float-card {
+      position: absolute;
+      background: white;
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 36px rgba(10,80,200,0.16);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font);
+      z-index: 2;
+    }
+
+    .float-card-1 { bottom: -18px; left: -22px; }
+    .float-card-2 { top: -14px; right: -18px; }
+
+    .fc-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #dcf5e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── WAVE DIVIDERS ──────────────── */
+    .wave {
+      display: block;
+      line-height: 0;
+      font-size: 0;
+    }
+
+    .wave svg { display: block; width: 100%; }
+
+    /* ── SECTIONS ───────────────────── */
+    .sec { padding: 92px 0; }
+
+    /* ── SERVICES ───────────────────── */
+    .sec-services { background: var(--bg); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .svc-card {
+      padding: 36px 30px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg);
+      transition:
+        transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+        box-shadow 0.3s ease,
+        border-color 0.25s ease;
+    }
+
+    .svc-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 58px rgba(10,100,220,0.12);
+      border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    }
+
+    .svc-icon {
+      width: 58px;
+      height: 58px;
+      background: var(--accent-light);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--accent);
+      transition: background 0.25s, color 0.25s, transform 0.25s;
+    }
+
+    .svc-card:hover .svc-icon {
+      background: var(--accent);
+      color: white;
+      transform: scale(1.06);
+    }
+
+    .svc-card h3 {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.012em;
+    }
+
+    .svc-card p { font-size: 0.91rem; color: var(--text-2); line-height: 1.75; }
+
+    /* ── WHY US ─────────────────────── */
+    .sec-why { background: var(--bg-tint); }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .trust-pill {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 24px 26px;
+      background: white;
+      border-radius: 9999px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 4px 20px rgba(10,100,220,0.05);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+    }
+
+    .trust-pill:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 36px rgba(10,100,220,0.12);
+    }
+
+    .trust-icon {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .trust-body h3 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .trust-body p { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; }
+
+    /* ── TESTIMONIALS ───────────────── */
+    .sec-testimonials { background: var(--bg); }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .testi-card {
+      padding: 38px;
+      background: #daeeff;
+      border: 1px solid #b8d9f5;
+      border-radius: 22px;
+      position: relative;
+    }
+
+    .testi-stars {
+      display: flex;
+      gap: 3px;
+      color: #f59e0b;
+      margin-bottom: 18px;
+    }
+
+    .testi-quote {
+      font-size: 1.02rem;
+      line-height: 1.8;
+      color: var(--text);
+      font-style: italic;
+      margin-bottom: 26px;
+    }
+
+    .testi-author { display: flex; align-items: center; gap: 14px; }
+
+    .testi-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      flex-shrink: 0;
+      border: 3px solid white;
+    }
+
+    .testi-name { font-size: 0.93rem; font-weight: 700; color: var(--text); }
+    .testi-prop { font-size: 0.8rem; color: var(--text-2); }
+
+    /* ── CONTACT ────────────────────── */
+    .sec-contact { background: var(--bg-tint); }
+
+    .contact-card {
+      max-width: 620px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      padding: 50px 50px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 18px 64px rgba(10,100,220,0.09);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 13px 15px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 0.93rem;
+      color: var(--text);
+      background: var(--bg-tint);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-control::placeholder { color: #9fb8cc; }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      background: white;
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 16%, transparent);
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a6078' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
+
+    .freq-group { display: flex; gap: 12px; }
+
+    .freq-option { flex: 1; position: relative; }
+
+    .freq-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+
+    .freq-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.91rem;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.18s;
+      background: var(--bg-tint);
+      user-select: none;
+    }
+
+    .freq-option input:checked + .freq-label {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .form-submit { width: 100%; padding: 16px; font-size: 1rem; margin-top: 6px; }
+
+    /* ── FOOTER ─────────────────────── */
+    footer {
+      background: var(--text);
+      padding: 52px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-logo em { font-style: normal; color: #62b6ff; }
+
+    .footer-contact {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-contact a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.93rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .footer-contact a:hover { color: white; }
+    .footer-contact a svg { opacity: 0.65; }
+
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.4); text-align: right; line-height: 1.7; }
+
+    /* ── SCROLL REVEAL ──────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1),
+                  transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.17s; }
+    .reveal-d3 { transition-delay: 0.26s; }
+
+    /* ── BUBBLES ────────────────────── */
+    .bubble-field {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 150;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 32% 30%,
+        rgba(255,255,255,0.95) 0%,
+        rgba(220,238,255,0.55) 35%,
+        rgba(160,210,255,0.28) 70%,
+        rgba(120,190,255,0.18) 100%
+      );
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow:
+        inset -2px -3px 6px rgba(120,180,230,0.18),
+        inset 3px 3px 5px rgba(255,255,255,0.55),
+        0 2px 12px rgba(80,150,220,0.12);
+      will-change: transform, opacity;
+    }
+
+    .bubble::after {
+      content: '';
+      position: absolute;
+      top: 18%;
+      left: 22%;
+      width: 26%;
+      height: 26%;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      filter: blur(1px);
+    }
+
+    /* ── TOAST ──────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 600;
+      background: var(--text);
+      color: white;
+      padding: 15px 22px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.22);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── TWEAKS PANEL ───────────────── */
+    .tweaks-panel {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      z-index: 500;
+      background: white;
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 20px 64px rgba(10,100,220,0.16);
+      width: 272px;
+      padding: 20px 20px 18px;
+      display: none;
+      font-family: var(--font);
+    }
+
+    .tweaks-panel.open { display: block; }
+
+    .tweaks-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .tweaks-title-txt {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tweaks-x {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-2);
+      padding: 2px;
+      line-height: 0;
+    }
+
+    .tweak-group { margin-bottom: 16px; }
+
+    .tweak-lbl {
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 9px;
+    }
+
+    .tweak-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .tweak-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      outline: 2px solid transparent;
+    }
+
+    .tweak-swatch:hover { transform: scale(1.15); }
+    .tweak-swatch.active { outline: 2px solid #0d1f38; outline-offset: 2px; }
+
+    .tweak-btns { display: flex; gap: 8px; }
+
+    .tweak-btn {
+      flex: 1;
+      padding: 8px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      color: var(--text-2);
+      font-family: var(--font);
+      transition: all 0.18s;
+    }
+
+    .tweak-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .tweak-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 4px 0 16px;
+    }
+
+    /* ── RESPONSIVE ─────────────────── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        position: fixed;
+        top: 66px; left: 0; right: 0;
+        flex-direction: column;
+        background: white;
+        padding: 24px 28px;
+        gap: 18px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        z-index: 199;
+      }
+      .nav-links.open a { font-size: 1rem; }
+      .nav-toggle { display: flex; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-sub { max-width: 100%; }
+      .hero-actions { justify-content: flex-start; }
+      .hero-visual { display: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .trust-grid { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .contact-card { padding: 34px 26px; }
+      .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+      .footer-copy { text-align: center; }
+    }
+
+    @media (min-width: 901px) and (max-width: 1100px) {
+      .trust-grid { grid-template-columns: 1fr; }
+      .trust-pill { border-radius: 20px; }
+    }
+  
+    /* ── Admin hero photo overlay ── */
+    .hero-photo-adm {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.55;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
+    </style>
+<style>
+html[data-theme="professional"] { --accent:#0EA5E9; --accent-dark:color-mix(in oklab,#0EA5E9 72%,black); --accent-light:color-mix(in oklab,#0EA5E9 10%,white); --text:#0d1f38; --text-2:#4a6078; --bg:#ffffff; --bg-tint:#f0f9ff; --border:#bae6fd; }
+html[data-theme="bold"] { --accent:#1D4ED8; --accent-dark:color-mix(in oklab,#1D4ED8 72%,black); --accent-light:color-mix(in oklab,#22C55E 10%,white); --text:#0d1f38; --text-2:#4a6078; --bg:#ffffff; --bg-tint:#f0fdf4; --border:#bbf7d0; }
+html[data-theme="warm"] { --accent:#0D9488; --accent-dark:color-mix(in oklab,#0D9488 72%,black); --accent-light:color-mix(in oklab,#0D9488 10%,white); --text:#134e4a; --text-2:#4a7c78; --bg:#FAFDF9; --bg-tint:#F0FDF4; --border:#99f6e4; }
+</style>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+  <!-- BUBBLE FIELD -->
+  <div class="bubble-field" id="bubbleField" aria-hidden="true"></div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="8" fill="#22c55e"></circle>
+      <path d="M5.5 9l2.5 2.5 4.5-5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    Thanks! We'll be in touch within 24 hours.
+  </div>
+
+  <!-- NAV -->
+  <nav id="mainNav">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo" data-adm="name">Spotless<em>Home</em></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li>
+          <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
+        </li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero" id="home">
+    <img id="hero-photo-adm" class="hero-photo-adm" src="" alt="" aria-hidden="true" style="display:none">
+    <div class="hero-inner">
+
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Trusted by 500+ homes &amp; businesses
+        </div>
+        <h1 data-adm="hero-h1">
+          <span class="shimmer">A Cleaner Home</span><br>
+          Without the Hassle
+        </h1>
+        <p class="hero-sub" data-adm="hero-sub">Professional domestic and commercial cleaning. Reliable, eco-friendly, and DBS-checked — so you can relax and enjoy a spotless space.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary" data-adm="cta">
+            Get a Cleaning Quote
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </a>
+          <a href="#services" class="btn btn-ghost">See our services</a>
+        </div>
+        <div class="hero-trust-row">
+          <div class="hero-trust-item">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.9 3.8 4.2.6-3 3 .7 4.2L7.5 11l-3.8 2-.7-4.2-3-3 4.2-.6z" fill="currentColor"></path></svg>
+            5-star rated
+          </div>
+          <div class="hero-trust-item">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5l5.5 2.5v4c0 3-2.4 5.5-5.5 6.5C4.4 13.5 2 11 2 8V4l5.5-2.5z" stroke="currentColor" stroke-width="1.5" fill="none"></path><path d="M5 7.5l2 2 3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            DBS Checked
+          </div>
+          <div class="hero-trust-item">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.5"></circle><path d="M5 7.5l2 2 3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            Fully Insured
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-img-wrap">
+          <div class="img-placeholder">
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" opacity="0.35">
+              <rect x="6" y="22" width="40" height="24" rx="3" stroke="#4a6078" stroke-width="2" fill="none"></rect>
+              <path d="M6 30h40" stroke="#4a6078" stroke-width="1.5"></path>
+              <path d="M16 22V16a10 10 0 0 1 20 0v6" stroke="#4a6078" stroke-width="2" fill="none" stroke-linecap="round"></path>
+              <circle cx="26" cy="38" r="3" fill="#4a6078" opacity="0.4"></circle>
+            </svg>
+            <span class="img-placeholder-label">hero image<br>clean bright interior</span>
+          </div>
+        </div>
+        <!-- Floating accent cards -->
+        <div class="float-card float-card-1">
+          <div class="fc-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5 6.5-7" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;font-weight:700;color:#0d1f38;line-height:1.3">Booking confirmed</div>
+            <div style="font-size:0.72rem;color:#4a6078">Today, 10:00 AM</div>
+          </div>
+        </div>
+        <div class="float-card float-card-2">
+          <div style="font-size:0.95rem;color:#f59e0b;letter-spacing:1px">★★★★★</div>
+          <div style="font-size:0.76rem;font-weight:600;color:#0d1f38">"Absolutely spotless!"</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- wave: hero → services -->
+  <div class="wave" style="background:linear-gradient(155deg,#f6fbff,#eaf4ff 50%,#dceeff)">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,36 C180,66 360,8 540,36 C720,64 900,6 1080,36 C1200,54 1320,22 1440,36 L1440,72 L0,72 Z" fill="#ffffff"></path>
+    </svg>
+  </div>
+
+  <!-- ═══════════════ SERVICES ═══════════════ -->
+  <section class="sec sec-services" id="services">
+    <div class="container">
+      <p class="label reveal">Our Services</p>
+      <h2 class="section-title reveal">Everything We Clean</h2>
+      <p class="section-sub reveal">From weekly home visits to full commercial contracts — a service for every space and schedule.</p>
+      <div class="services-grid">
+
+        <div class="svc-card reveal reveal-d1">
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M4 13L14 5l10 8v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V13z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"></path>
+              <rect x="10" y="16" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+              <circle cx="14" cy="20.5" r="1.2" fill="currentColor" opacity="0.6"></circle>
+            </svg>
+          </div>
+          <h3 data-adm="svc-1-name">Regular Domestic Cleaning</h3>
+          <p data-adm="svc-1-desc">Weekly, fortnightly, or monthly home cleans tailored to your schedule. Consistent, thorough, and always reliable.</p>
+        </div>
+
+        <div class="svc-card reveal reveal-d2">
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8" fill="none"></circle>
+              <circle cx="11" cy="11" r="2.5" fill="currentColor" opacity="0.25"></circle>
+              <path d="M16 16l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              <path d="M22 18v4M20 24h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <h3 data-adm="svc-2-name">End of Tenancy</h3>
+          <p data-adm="svc-2-desc">Deep cleaning for landlords and tenants. We cover every corner to help ensure your deposit is returned in full.</p>
+        </div>
+
+        <div class="svc-card reveal reveal-d3">
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="3" y="5" width="22" height="20" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"></rect>
+              <path d="M3 11h22" stroke="currentColor" stroke-width="1.5"></path>
+              <path d="M9 3v2M14 3v2M19 3v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+              <rect x="7" y="14.5" width="4.5" height="4.5" rx="0.5" fill="currentColor" opacity="0.2"></rect>
+              <rect x="16.5" y="14.5" width="4.5" height="4.5" rx="0.5" fill="currentColor" opacity="0.2"></rect>
+              <rect x="11.5" y="17" width="5" height="8" rx="0.5" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.2"></rect>
+            </svg>
+          </div>
+          <h3 data-adm="svc-3-name">Office &amp; Commercial</h3>
+          <p data-adm="svc-3-desc">Flexible cleaning contracts for offices, retail spaces, and commercial premises. Morning, evening, or weekend slots.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- wave: services → why us -->
+  <div class="wave" style="background:#ffffff">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,22 C260,58 480,4 720,38 C900,64 1160,10 1440,28 L1440,72 L0,72 Z" fill="#f0f7ff"></path>
+    </svg>
+  </div>
+
+  <!-- ═══════════════ WHY US ═══════════════ -->
+  <section class="sec sec-why" id="why">
+    <div class="container">
+      <p class="label reveal">Why Choose Us</p>
+      <h2 class="section-title reveal">Cleaning You Can Trust</h2>
+      <p class="section-sub reveal">Every member of our team is vetted, trained, and dedicated to doing the job properly.</p>
+      <div class="trust-grid">
+
+        <div class="trust-pill reveal reveal-d1">
+          <div class="trust-icon">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <path d="M13 2.5l9 4v5c0 5-3.8 9.2-9 10.5C4.8 20.7 1 16.5 1 11.5v-5l12-4z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"></path>
+              <path d="M8.5 13l3 3 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="trust-body">
+            <h3 data-adm="why-1-title">DBS Checked Staff</h3>
+            <p data-adm="why-1-desc">All team members carry enhanced DBS certificates — verified before their first visit.</p>
+          </div>
+        </div>
+
+        <div class="trust-pill reveal reveal-d2">
+          <div class="trust-icon">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <circle cx="13" cy="13" r="11" stroke="currentColor" stroke-width="1.8" fill="none"></circle>
+              <path d="M8 13l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="trust-body">
+            <h3 data-adm="why-2-title">Fully Insured</h3>
+            <p data-adm="why-2-desc">Comprehensive public liability cover gives you total peace of mind on every clean.</p>
+          </div>
+        </div>
+
+        <div class="trust-pill reveal reveal-d3">
+          <div class="trust-icon">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <path d="M13 3S6 7 6 13.5C6 17.6 9.1 21 13 21s7-3.4 7-7.5C20 7 13 3 13 3z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"></path>
+              <path d="M13 9v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="trust-body">
+            <h3 data-adm="why-3-title">Eco-Friendly Products</h3>
+            <p data-adm="why-3-desc">Plant-based, biodegradable formulas — safe for children, pets, and the planet.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- wave: why us → testimonials -->
+  <div class="wave" style="background:#f0f7ff">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,50 C200,14 500,62 800,34 C1000,16 1220,56 1440,26 L1440,72 L0,72 Z" fill="#ffffff"></path>
+    </svg>
+  </div>
+
+  <!-- ═══════════════ TESTIMONIALS ═══════════════ -->
+  <section class="sec sec-testimonials" id="reviews">
+    <div class="container">
+      <p class="label reveal">Reviews</p>
+      <h2 class="section-title reveal">What Our Customers Say</h2>
+      <p class="section-sub reveal" style="margin-bottom:50px">Real reviews from real homes and businesses.</p>
+      <div class="testi-grid">
+
+        <div class="testi-card reveal reveal-d1">
+          <div class="testi-stars">
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+          </div>
+          <p class="testi-quote"><span data-adm="review-1-text">"I've used three cleaning services over the years and Spotless Home is in a different league. Incredibly thorough, trustworthy, and always on time. My flat genuinely sparkles after every visit. Couldn't recommend more highly."</span></p>
+          <div class="testi-author">
+            <div class="testi-avatar">S</div>
+            <div>
+              <div class="testi-name" data-adm="review-1-name">Sarah M.</div>
+              <div class="testi-prop" data-adm="review-1-location">3-bed semi-detached, Bristol</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card reveal reveal-d2">
+          <div class="testi-stars">
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+            <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 1l2 4.1 4.5.7-3.2 3.2.8 4.5-4.1-2.2-4.1 2.2.8-4.5L2 5.8l4.5-.7z" fill="currentColor"></path></svg>
+          </div>
+          <p class="testi-quote"><span data-adm="review-2-text">"Booked for an end-of-tenancy clean and got our full deposit back without a single issue. The team was meticulous — they cleaned things I didn't even think of. Worth every penny and I've already recommended them to friends."</span></p>
+          <div class="testi-author">
+            <div class="testi-avatar">J</div>
+            <div>
+              <div class="testi-name" data-adm="review-2-name">James K.</div>
+              <div class="testi-prop" data-adm="review-2-location">2-bed flat, end of tenancy</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- wave: testimonials → contact -->
+  <div class="wave" style="background:#ffffff">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,28 C300,66 600,8 900,42 C1100,62 1280,18 1440,32 L1440,72 L0,72 Z" fill="#f0f7ff"></path>
+    </svg>
+  </div>
+
+  <!-- ═══════════════ CONTACT ═══════════════ -->
+  <section class="sec sec-contact" id="contact">
+    <div class="container">
+      <p class="label reveal">Get in Touch</p>
+      <h2 class="section-title reveal">Get My Free Quote</h2>
+      <p class="section-sub reveal" data-adm="about">Tell us about your property and we'll come back to you within 24 hours — no obligation.</p>
+      <div class="contact-card reveal">
+        <form id="quoteForm" novalidate>
+          <!-- Replace YOUR_FORMSPREE_ID with the Formspree form ID for this client -->
+          <input type="hidden" name="_subject" value="New Enquiry from Spotless Home Cleaning">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fname">Your Name</label>
+              <input type="text" id="fname" name="name" class="form-control" placeholder="e.g. Jane Smith" required>
+            </div>
+            <div class="form-group">
+              <label for="fphone">Phone Number</label>
+              <input type="tel" id="fphone" name="phone" class="form-control" placeholder="07700 000 000" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ftype">Type of Clean</label>
+            <select id="ftype" name="cleanType" class="form-control" required>
+              <option value="" disabled selected>Select a service…</option>
+              <option value="regular">Regular Domestic Cleaning</option>
+              <option value="tenancy">End of Tenancy</option>
+              <option value="commercial">Office &amp; Commercial</option>
+              <option value="deep">One-off Deep Clean</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Frequency</label>
+            <div class="freq-group">
+              <div class="freq-option">
+                <input type="radio" id="freq-oneoff" name="frequency" value="oneoff">
+                <label class="freq-label" for="freq-oneoff">One-off</label>
+              </div>
+              <div class="freq-option">
+                <input type="radio" id="freq-regular" name="frequency" value="regular" checked>
+                <label class="freq-label" for="freq-regular">Regular</label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary form-submit">
+            Get My Free Quote
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- wave: contact → footer -->
+  <div class="wave" style="background:#f0f7ff">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,18 C360,52 720,4 1080,36 C1220,46 1340,16 1440,22 L1440,60 L0,60 Z" fill="#0d1f38"></path>
+    </svg>
+  </div>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-logo" data-adm="footer-name">Spotless<em>Home</em> Cleaning</div>
+      <div class="footer-contact">
+        <a href="tel:01234567890">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2.5c0-.3.2-.5.5-.5h2.6c.3 0 .5.2.5.4l.8 3.5c.1.2-.1.5-.3.6l-1.2.7a8.5 8.5 0 0 0 3.8 3.8l.7-1.2c.1-.2.4-.4.6-.3l3.5.8c.3.1.5.3.5.5V13a.5.5 0 0 1-.5.5C4.6 13.5 2 5.5 2 2.5z" stroke="currentColor" stroke-width="1.3" fill="none"></path></svg>
+          <span data-adm="phone">01234 567 890</span>
+        </a>
+        <a href="mailto:hello@spotlesshomecleaning.co.uk">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"></rect><path d="M1.5 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg>
+          <span data-adm="email">hello@spotlesshomecleaning.co.uk</span>
+        </a>
+        <span>
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5C5 1.5 3 3.5 3 6c0 3.5 4.5 7.5 4.5 7.5S12 9.5 12 6c0-2.5-2-4.5-4.5-4.5zm0 6a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" stroke="currentColor" stroke-width="1.3" fill="none"></path></svg>
+          <span data-adm="address">123 High Street, London</span>
+        </span>
+      </div>
+      <div class="footer-copy">
+        <p>© <span data-adm="year">2025</span> <span data-adm="footer-name">Spotless Home Cleaning</span> Ltd.</p>
+        <p>Sparkling Clean. Every Time.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════ TWEAKS PANEL ═══════════════ -->
+  <div class="tweaks-panel" id="tweaksPanel">
+    <div class="tweaks-hd">
+      <span class="tweaks-title-txt">Tweaks</span>
+      <button class="tweaks-x" id="tweaksClose" aria-label="Close tweaks">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      </button>
+    </div>
+    <hr class="tweak-divider">
+    <div class="tweak-group">
+      <div class="tweak-lbl">Accent Colour</div>
+      <div class="tweak-swatches" id="accentSwatches">
+        <div class="tweak-swatch" data-val="#0a84ff" style="background:#0a84ff" title="Sky Blue"></div>
+        <div class="tweak-swatch" data-val="#0ea5e9" style="background:#0ea5e9" title="Ocean"></div>
+        <div class="tweak-swatch" data-val="#2563eb" style="background:#2563eb" title="Cobalt"></div>
+        <div class="tweak-swatch" data-val="#10b981" style="background:#10b981" title="Mint"></div>
+        <div class="tweak-swatch" data-val="#7c3aed" style="background:#7c3aed" title="Violet"></div>
+      </div>
+    </div>
+    <div class="tweak-group">
+      <div class="tweak-lbl">Button Style</div>
+      <div class="tweak-btns" id="btnStyleBtns">
+        <button class="tweak-btn" data-val="sharp">Sharp</button>
+        <button class="tweak-btn" data-val="soft">Soft</button>
+        <button class="tweak-btn" data-val="pill">Pill</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── TWEAK DEFAULTS (saved to disk by host) ──
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"accent":"#0a84ff","buttonStyle":"sharp"}/*EDITMODE-END*/;
+
+    const root = document.documentElement;
+    const btnRadii = { sharp: '0px', soft: '10px', pill: '9999px' };
+
+    function applyTweaks(t) {
+      root.style.setProperty('--accent', t.accent);
+      root.style.setProperty('--radius-btn', btnRadii[t.buttonStyle] || '0px');
+    }
+
+    function setTweak(key, val) {
+      TWEAK_DEFAULTS[key] = val;
+      applyTweaks(TWEAK_DEFAULTS);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+      refreshTweakUI();
+    }
+
+    function refreshTweakUI() {
+      document.querySelectorAll('#accentSwatches .tweak-swatch').forEach(el => {
+        el.classList.toggle('active', el.dataset.val === TWEAK_DEFAULTS.accent);
+      });
+      document.querySelectorAll('#btnStyleBtns .tweak-btn').forEach(el => {
+        el.classList.toggle('active', el.dataset.val === TWEAK_DEFAULTS.buttonStyle);
+      });
+    }
+
+    // Apply on load
+    applyTweaks(TWEAK_DEFAULTS);
+
+    // ── TWEAKS PROTOCOL ──
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') {
+        document.getElementById('tweaksPanel').classList.add('open');
+        refreshTweakUI();
+      }
+      if (e.data?.type === '__deactivate_edit_mode') {
+        document.getElementById('tweaksPanel').classList.remove('open');
+      }
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+    // Close button
+    document.getElementById('tweaksClose').addEventListener('click', () => {
+      document.getElementById('tweaksPanel').classList.remove('open');
+      window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+    });
+
+    // Swatch clicks
+    document.getElementById('accentSwatches').addEventListener('click', e => {
+      const sw = e.target.closest('.tweak-swatch');
+      if (sw) setTweak('accent', sw.dataset.val);
+    });
+
+    // Button style clicks
+    document.getElementById('btnStyleBtns').addEventListener('click', e => {
+      const btn = e.target.closest('.tweak-btn');
+      if (btn) setTweak('buttonStyle', btn.dataset.val);
+    });
+
+    // ── ONE-TIME BUBBLE FLOAT ──
+    // Triggers once when user scrolls past the first section break (hero → services wave).
+    let bubblesFired = false;
+    function maybeFireBubbles() {
+      if (bubblesFired) return;
+      const services = document.getElementById('services');
+      if (!services) return;
+      // Fire as soon as the top of the services section enters the viewport
+      const trigger = services.getBoundingClientRect().top;
+      if (trigger < window.innerHeight * 0.92) {
+        bubblesFired = true;
+        spawnBubbles();
+        window.removeEventListener('scroll', maybeFireBubbles);
+      }
+    }
+
+    function spawnBubbles() {
+      const field = document.getElementById('bubbleField');
+      const count = 14;
+      const bubbles = [];
+      const vh = () => window.innerHeight;
+      const vw = () => window.innerWidth;
+
+      for (let i = 0; i < count; i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = 8 + Math.random() * 22;
+        b.style.width = size + 'px';
+        b.style.height = size + 'px';
+        b.style.opacity = '0';
+        field.appendChild(b);
+
+        bubbles.push({
+          el: b,
+          size,
+          x: (4 + Math.random() * 92) / 100 * vw(),       // px from left
+          drift: (Math.random() - 0.5) * 60,              // horizontal drift px
+          driftFreq: 0.5 + Math.random() * 1.2,
+          startY: vh() + 60,                              // start below viewport
+          endY: -size - 40,                               // end above viewport
+          duration: 5500 + Math.random() * 4500,          // 5.5–10s
+          delay: Math.random() * 1800,                    // 0–1.8s
+          startTime: null,
+        });
+      }
+
+      const easeOutQuad = t => 1 - (1 - t) * (1 - t);
+      const fieldStart = performance.now();
+
+      function tick(now) {
+        let alive = 0;
+        for (const bub of bubbles) {
+          const elapsed = now - fieldStart - bub.delay;
+          if (elapsed < 0) { alive++; continue; }
+          const t = elapsed / bub.duration;
+          if (t >= 1) {
+            if (bub.el.isConnected) bub.el.remove();
+            continue;
+          }
+          alive++;
+          const eased = easeOutQuad(t);
+          const y = bub.startY + (bub.endY - bub.startY) * eased;
+          const xOff = Math.sin(t * Math.PI * bub.driftFreq * 2) * bub.drift;
+          // Opacity: fade in, hold, fade out
+          let op;
+          if (t < 0.12) op = (t / 0.12) * 0.9;
+          else if (t > 0.85) op = (1 - (t - 0.85) / 0.15) * 0.9;
+          else op = 0.9;
+          bub.el.style.transform = `translate3d(${bub.x + xOff}px, ${y}px, 0)`;
+          bub.el.style.opacity = op.toFixed(3);
+        }
+        if (alive > 0) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('scroll', maybeFireBubbles, { passive: true });
+
+    // ── NAV SCROLL ──
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // ── MOBILE MENU ──
+    const toggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── FORM SUBMIT ──
+    const form = document.getElementById('quoteForm');
+    const toast = document.getElementById('toast');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = form.querySelector('#fname').value.trim();
+      const phone = form.querySelector('#fphone').value.trim();
+      const type = form.querySelector('#ftype').value;
+
+      if (!name || !phone || !type) {
+        [form.querySelector('#fname'), form.querySelector('#fphone'), form.querySelector('#ftype')].forEach(el => {
+          if (!el.value.trim()) {
+            el.style.borderColor = '#ef4444';
+            el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+            setTimeout(() => {
+              el.style.borderColor = '';
+              el.style.boxShadow = '';
+            }, 1800);
+          }
+        });
+        return;
+      }
+
+      const btn = form.querySelector('[type=submit]');
+      btn.disabled = true;
+
+      // Replace YOUR_FORMSPREE_ID with the Formspree form ID for this client
+      fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, phone: phone, cleanType: type, frequency: (form.querySelector('[name=frequency]:checked') || {}).value || '' })
+      })
+      .then(res => {
+        btn.disabled = false;
+        if (res.ok) {
+          toast.classList.add('show');
+          form.reset();
+          setTimeout(() => toast.classList.remove('show'), 4000);
+        } else {
+          toast.textContent = 'Something went wrong — please try again.';
+          toast.style.background = '#ef4444';
+          toast.classList.add('show');
+          setTimeout(() => { toast.classList.remove('show'); toast.textContent = "Thanks! We'll be in touch within 24 hours."; toast.style.background = ''; }, 4000);
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        toast.textContent = 'Something went wrong — please try again.';
+        toast.style.background = '#ef4444';
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); toast.textContent = "Thanks! We'll be in touch within 24 hours."; toast.style.background = ''; }, 4000);
+      });
+    });
+
+    // Live border reset on input
+    form.querySelectorAll('.form-control').forEach(el => {
+      el.addEventListener('input', () => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      });
+    });
+  </script>
+
+<script>
+(function(){
+  var CONTENT_KEY = 'content_spotless_cleaning';
+  var THEME_KEY = 'theme_spotless_cleaning';
+  var themeMap = {
+    professional: {'--accent':'#0EA5E9','--accent-dark':'color-mix(in oklab,#0EA5E9 72%,black)','--accent-light':'color-mix(in oklab,#0EA5E9 10%,white)','--text':'#0d1f38','--text-2':'#4a6078','--bg':'#ffffff','--bg-tint':'#f0f9ff','--border':'#bae6fd'},
+    bold: {'--accent':'#1D4ED8','--accent-dark':'color-mix(in oklab,#1D4ED8 72%,black)','--accent-light':'color-mix(in oklab,#22C55E 10%,white)','--text':'#0d1f38','--text-2':'#4a6078','--bg':'#ffffff','--bg-tint':'#f0fdf4','--border':'#bbf7d0'},
+    warm: {'--accent':'#0D9488','--accent-dark':'color-mix(in oklab,#0D9488 72%,black)','--accent-light':'color-mix(in oklab,#0D9488 10%,white)','--text':'#134e4a','--text-2':'#4a7c78','--bg':'#FAFDF9','--bg-tint':'#F0FDF4','--border':'#99f6e4'}
+  };
+  function applyTheme(name){
+    if(!themeMap[name]) return;
+    Object.entries(themeMap[name]).forEach(function(kv){ document.documentElement.style.setProperty(kv[0],kv[1]); });
+  }
+  var savedTheme = localStorage.getItem(THEME_KEY);
+  if(savedTheme) applyTheme(savedTheme);
+  var saved = JSON.parse(localStorage.getItem(CONTENT_KEY)||'{}');
+  Object.entries(saved).forEach(function(kv){
+    var els = document.querySelectorAll('[data-adm="'+kv[0]+'"]');
+    els.forEach(function(el){ el.textContent = kv[1]; });
+  });
+})();
+</script>
+
+<script>
+(function() {
+  try {
+    var imgUrl = localStorage.getItem('img_hero_spotless_cleaning');
+    if (imgUrl) {
+      var el = document.getElementById('hero-photo-adm');
+      if (el) {
+        el.src = imgUrl;
+        el.style.display = 'block';
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+</body>
+</html>

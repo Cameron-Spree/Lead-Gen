@@ -98,6 +98,24 @@
                 <button class="primary-button" type="submit">Run discovery</button>
                 <button class="ghost-button" id="saveDiscoverySettings" type="button">Save setup</button>
               </div>
+
+              <details class="places-guide">
+                <summary>What Places can return</summary>
+                <div class="places-guide-grid">
+                  <div>
+                    <strong>Basic</strong>
+                    <span>name, place ID, address, vicinity, map URL, geometry, business status, types, plus code, photos</span>
+                  </div>
+                  <div>
+                    <strong>Contact</strong>
+                    <span>formatted phone, international phone, website, opening hours, weekday hours</span>
+                  </div>
+                  <div>
+                    <strong>Atmosphere</strong>
+                    <span>rating, review count, reviews, price level</span>
+                  </div>
+                </div>
+              </details>
             </form>
 
             <div class="panel">
@@ -151,13 +169,7 @@
                 <h3>Google Sheets-ready lead table</h3>
                 <p>Export this as CSV and import it straight into Google Sheets.</p>
               </div>
-              <div class="button-row compact">
-                <label class="file-button">
-                  Import CSV
-                  <input id="csvImport" type="file" accept=".csv,text/csv">
-                </label>
-                <button class="primary-button" id="exportCsvButton" type="button">Export CSV</button>
-              </div>
+              <span class="counter" id="leadCount">0 leads</span>
             </div>
 
             <form class="quick-add" id="quickAddForm">
@@ -183,9 +195,52 @@
                     <th>Template</th>
                     <th>Next action</th>
                   </tr>
+                  <tr class="filter-row">
+                    <th>
+                      <select id="filterStatus">
+                        <option value="">All</option>
+                        <option value="New">New</option>
+                        <option value="Audited">Audited</option>
+                        <option value="Qualified">Qualified</option>
+                        <option value="Preview Built">Preview Built</option>
+                        <option value="Emailed">Emailed</option>
+                        <option value="Replied">Replied</option>
+                        <option value="Call Booked">Call Booked</option>
+                        <option value="Won">Won</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Do Not Contact">Do Not Contact</option>
+                      </select>
+                    </th>
+                    <th><input id="filterBusiness" type="text" placeholder="Filter"></th>
+                    <th><input id="filterCategory" type="text" placeholder="Filter"></th>
+                    <th><input id="filterCity" type="text" placeholder="Filter"></th>
+                    <th><input id="filterWebsite" type="text" placeholder="Filter"></th>
+                    <th><input id="filterEmail" type="text" placeholder="Filter"></th>
+                    <th><input id="filterScore" type="text" placeholder=">= 5"></th>
+                    <th><input id="filterProblem" type="text" placeholder="Filter"></th>
+                    <th>
+                      <select id="filterTemplate">
+                        <option value="">All</option>
+                      </select>
+                    </th>
+                    <th>
+                      <div class="filter-actions">
+                        <input id="filterNextAction" type="text" placeholder="Filter">
+                        <button class="ghost-button tiny-button" id="clearLeadFilters" type="button">Clear</button>
+                      </div>
+                    </th>
+                  </tr>
                 </thead>
                 <tbody id="leadTableBody"></tbody>
               </table>
+            </div>
+
+            <div class="button-row compact">
+              <label class="file-button">
+                Import CSV
+                <input id="csvImport" type="file" accept=".csv,text/csv">
+              </label>
+              <button class="primary-button" id="exportCsvButton" type="button">Export CSV</button>
             </div>
           </div>
         </section>
@@ -209,7 +264,7 @@
               <div class="panel-header">
                 <div>
                   <h3>Auto-populate a preview</h3>
-                  <p>Select a lead and a template. The app fills the placeholder content and creates a quick preview.</p>
+                  <p>Select a lead and a template. The app fills the actual template fields and shows the rendered site.</p>
                 </div>
               </div>
               <div class="form-grid single">
@@ -221,14 +276,6 @@
                   Template
                   <select id="populateTemplateSelect"></select>
                 </label>
-                <label>
-                  Primary offer
-                  <input id="populateOffer" type="text" value="A faster mobile site with a clear booking/contact button">
-                </label>
-                <label>
-                  Package price
-                  <input id="populatePrice" type="text" value="from £399">
-                </label>
               </div>
               <div class="button-row">
                 <button class="primary-button" type="submit">Generate preview</button>
@@ -239,11 +286,11 @@
             <div class="panel">
               <div class="panel-header">
                 <div>
-                  <h3>Generated copy</h3>
-                  <p>Use this as the starting point for outreach or a demo page.</p>
+                  <h3>Template coverage</h3>
+                  <p>Shows which template fields are populated from lead data, defaults, or still need a human touch.</p>
                 </div>
               </div>
-              <textarea id="generatedCopy" class="copy-box" readonly></textarea>
+              <div id="templateCoverage" class="coverage-list"></div>
             </div>
           </div>
 

@@ -57,5 +57,3 @@ The prototype is intentionally local-first. The natural next steps are:
 - Add Lighthouse/PageSpeed checks for website quality scoring.
 - Add authenticated Gmail/Workspace sending or a mail merge provider.
 - Deploy generated previews to Netlify, Vercel, or Cloudflare Pages.
-
-Refreshed on 2026-05-25.

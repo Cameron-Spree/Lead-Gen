@@ -24,6 +24,14 @@ const csvHeaders = [
   "Source",
   "Source URL",
   "Place ID",
+  "Formatted Address",
+  "Google Maps URL",
+  "Business Status",
+  "Rating",
+  "Reviews Count",
+  "Price Level",
+  "Opening Hours",
+  "Types",
   "Current Site Score",
   "Has Website",
   "Mobile Friendly",
@@ -43,6 +51,39 @@ const csvHeaders = [
   "Next Action",
   "Notes"
 ];
+
+const templateFieldGuide = [
+  { key: "name", label: "Business name" },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "address", label: "Address" },
+  { key: "hero-h1", label: "Hero headline" },
+  { key: "hero-sub", label: "Hero subhead" },
+  { key: "cta", label: "CTA button" },
+  { key: "about", label: "About blurb" },
+  { key: "svc-1-name", label: "Service 1 name" },
+  { key: "svc-1-desc", label: "Service 1 description" },
+  { key: "svc-2-name", label: "Service 2 name" },
+  { key: "svc-2-desc", label: "Service 2 description" },
+  { key: "svc-3-name", label: "Service 3 name" },
+  { key: "svc-3-desc", label: "Service 3 description" },
+  { key: "why-1-title", label: "Why 1 title" },
+  { key: "why-1-desc", label: "Why 1 description" },
+  { key: "why-2-title", label: "Why 2 title" },
+  { key: "why-2-desc", label: "Why 2 description" },
+  { key: "why-3-title", label: "Why 3 title" },
+  { key: "why-3-desc", label: "Why 3 description" },
+  { key: "review-1-text", label: "Review 1 text" },
+  { key: "review-1-name", label: "Review 1 name" },
+  { key: "review-1-location", label: "Review 1 location" },
+  { key: "review-2-text", label: "Review 2 text" },
+  { key: "review-2-name", label: "Review 2 name" },
+  { key: "review-2-location", label: "Review 2 location" },
+  { key: "footer-name", label: "Footer business name" },
+  { key: "year", label: "Year" }
+];
+
+const templateSourcePath = "./templates/cleaning-template.html";
 
 const defaultTemplates = [
   {
@@ -239,9 +280,23 @@ const defaultLeads = [
   }
 ];
 
+const defaultLeadFilters = {
+  status: "",
+  businessName: "",
+  category: "",
+  city: "",
+  website: "",
+  email: "",
+  score: "",
+  problemFound: "",
+  template: "",
+  nextAction: ""
+};
+
 let state = loadState();
 let discoveryResults = [];
 let lastPreviewHtml = "";
+let templateSourceCache = null;
 
 const els = {};
 
@@ -276,17 +331,27 @@ function cacheElements() {
     "quickCategory",
     "quickCity",
     "quickWebsite",
+    "leadCount",
+    "filterStatus",
+    "filterBusiness",
+    "filterCategory",
+    "filterCity",
+    "filterWebsite",
+    "filterEmail",
+    "filterScore",
+    "filterProblem",
+    "filterTemplate",
+    "filterNextAction",
+    "clearLeadFilters",
     "leadTableBody",
     "templateGrid",
     "exportTemplatesButton",
     "populateForm",
     "populateLeadSelect",
     "populateTemplateSelect",
-    "populateOffer",
-    "populatePrice",
-    "generatedCopy",
     "downloadPreviewButton",
     "sitePreview",
+    "templateCoverage",
     "outreachSettingsForm",
     "senderName",
     "fromEmail",
@@ -360,7 +425,7 @@ function bindEvents() {
 
   els.populateForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    generatePreview();
+    void generatePreview();
   });
 
   els.downloadPreviewButton.addEventListener("click", () => {
@@ -384,6 +449,24 @@ function bindEvents() {
   els.mailtoButton.addEventListener("click", openMailDraft);
   els.markEmailedButton.addEventListener("click", markSelectedLeadEmailed);
   els.pipelineFilter.addEventListener("change", renderPipeline);
+
+  [
+    els.filterStatus,
+    els.filterBusiness,
+    els.filterCategory,
+    els.filterCity,
+    els.filterWebsite,
+    els.filterEmail,
+    els.filterScore,
+    els.filterProblem,
+    els.filterTemplate,
+    els.filterNextAction
+  ].forEach((field) => {
+    field.addEventListener("input", syncLeadFilters);
+    field.addEventListener("change", syncLeadFilters);
+  });
+
+  els.clearLeadFilters.addEventListener("click", clearLeadFilters);
 }
 
 function loadState() {
@@ -402,6 +485,10 @@ function loadState() {
           country: "GB",
           limit: 8,
           ...(parsed.discoverySettings || {})
+        },
+        leadFilters: {
+          ...defaultLeadFilters,
+          ...(parsed.leadFilters || {})
         },
         outreachSettings: {
           senderName: "Your Web Studio",
@@ -428,6 +515,7 @@ function loadState() {
       country: "GB",
       limit: 8
     },
+    leadFilters: { ...defaultLeadFilters },
     outreachSettings: {
       senderName: "Your Web Studio",
       fromEmail: "hello@example.com",
@@ -457,6 +545,22 @@ function hydrateForms() {
   els.calendarLink.value = outreach.calendarLink;
   els.physicalAddress.value = outreach.physicalAddress;
   els.defaultCta.value = outreach.defaultCta;
+
+  hydrateLeadFilters();
+}
+
+function hydrateLeadFilters() {
+  const filters = state.leadFilters || defaultLeadFilters;
+  els.filterStatus.value = filters.status || "";
+  els.filterBusiness.value = filters.businessName || "";
+  els.filterCategory.value = filters.category || "";
+  els.filterCity.value = filters.city || "";
+  els.filterWebsite.value = filters.website || "";
+  els.filterEmail.value = filters.email || "";
+  els.filterScore.value = filters.score || "";
+  els.filterProblem.value = filters.problemFound || "";
+  els.filterTemplate.value = filters.template || "";
+  els.filterNextAction.value = filters.nextAction || "";
 }
 
 function setActiveTab(tab) {
@@ -484,6 +588,30 @@ function renderAll() {
   renderSelects();
   renderMetrics();
   renderPipeline();
+}
+
+function syncLeadFilters() {
+  state.leadFilters = {
+    status: els.filterStatus.value,
+    businessName: els.filterBusiness.value.trim(),
+    category: els.filterCategory.value.trim(),
+    city: els.filterCity.value.trim(),
+    website: els.filterWebsite.value.trim(),
+    email: els.filterEmail.value.trim(),
+    score: els.filterScore.value.trim(),
+    problemFound: els.filterProblem.value.trim(),
+    template: els.filterTemplate.value,
+    nextAction: els.filterNextAction.value.trim()
+  };
+  saveState();
+  renderLeadTable();
+}
+
+function clearLeadFilters() {
+  state.leadFilters = { ...defaultLeadFilters };
+  saveState();
+  hydrateLeadFilters();
+  renderLeadTable();
 }
 
 function saveDiscoverySettings() {
@@ -555,6 +683,14 @@ function makeMockDiscovery(settings) {
     source: "Mock discovery",
     sourceUrl: "",
     placeId: "",
+    formattedAddress: `${city} High Street`,
+    googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + " " + city)}`,
+    businessStatus: "OPERATIONAL",
+    rating: index % 2 === 0 ? (4.1 + (index % 3) * 0.2).toFixed(1) : "",
+    reviewsCount: index % 2 === 0 ? String(24 + index * 7) : "",
+    priceLevel: index % 4 === 0 ? "1" : "",
+    openingHours: "Mon-Fri 09:00-17:00",
+    types: [industry, "establishment"].join(", "),
     currentSiteScore: index % 3 === 0 ? 1 : 4,
     problemFound: index % 3 === 0 ? "No website found." : "Website likely needs manual audit.",
     recommendedTemplate: suggestTemplate(industry),
@@ -580,6 +716,9 @@ async function runGooglePlacesDiscovery(settings) {
 
   for (const place of limited) {
     const details = await placeDetails(service, place.place_id);
+    const openingHours = Array.isArray(details.opening_hours?.weekday_text)
+      ? details.opening_hours.weekday_text.join(" | ")
+      : "";
     detailed.push({
       id: makeId("candidate"),
       businessName: details.name || place.name || "",
@@ -591,6 +730,14 @@ async function runGooglePlacesDiscovery(settings) {
       source: "Google Places API",
       sourceUrl: details.url || "",
       placeId: details.place_id || place.place_id || "",
+      formattedAddress: details.formatted_address || details.vicinity || "",
+      googleMapsUrl: details.url || "",
+      businessStatus: details.business_status || "",
+      rating: details.rating || "",
+      reviewsCount: details.user_ratings_total || "",
+      priceLevel: details.price_level ?? "",
+      openingHours,
+      types: Array.isArray(details.types) ? details.types.join(", ") : "",
       currentSiteScore: details.website ? "" : 1,
       problemFound: details.website ? "Website found. Needs manual audit." : "No website returned by Places details.",
       recommendedTemplate: suggestTemplate(settings.industry),
@@ -650,7 +797,23 @@ function placeDetails(service, placeId) {
     service.getDetails(
       {
         placeId,
-        fields: ["place_id", "name", "website", "formatted_phone_number", "url"]
+        fields: [
+          "place_id",
+          "name",
+          "website",
+          "formatted_phone_number",
+          "international_phone_number",
+          "formatted_address",
+          "vicinity",
+          "geometry",
+          "business_status",
+          "opening_hours",
+          "rating",
+          "user_ratings_total",
+          "price_level",
+          "types",
+          "url"
+        ]
       },
       (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -675,9 +838,14 @@ function renderDiscoveryResults() {
       const website = candidate.website
         ? `<a href="${escapeAttr(candidate.website)}" target="_blank" rel="noreferrer">${escapeHtml(candidate.website)}</a>`
         : `<span class="status-pill lost">No website</span>`;
+      const extraLine = [
+        candidate.formattedAddress,
+        candidate.rating ? `Rating ${candidate.rating}` : "",
+        candidate.businessStatus ? candidate.businessStatus.replace(/_/g, " ") : ""
+      ].filter(Boolean).join(" · ");
       return `
         <tr>
-          <td><strong>${escapeHtml(candidate.businessName)}</strong><br><span class="muted">${escapeHtml(candidate.category || "")}</span></td>
+          <td><strong>${escapeHtml(candidate.businessName)}</strong><br><span class="muted">${escapeHtml(candidate.category || "")}</span><br><span class="muted">${escapeHtml(extraLine)}</span></td>
           <td>${escapeHtml(candidate.city || "")}</td>
           <td>${website}</td>
           <td>${escapeHtml(candidate.phone || "")}</td>
@@ -737,12 +905,20 @@ function addLead(partial) {
 }
 
 function renderLeadTable() {
+  const filteredLeads = getFilteredLeads();
+  els.leadCount.textContent = `${filteredLeads.length} lead${filteredLeads.length === 1 ? "" : "s"}${filteredLeads.length === state.leads.length ? "" : ` of ${state.leads.length}`}`;
+
   if (!state.leads.length) {
     els.leadTableBody.innerHTML = `<tr><td colspan="10" class="empty-state">No leads yet. Add one manually or from discovery.</td></tr>`;
     return;
   }
 
-  els.leadTableBody.innerHTML = state.leads
+  if (!filteredLeads.length) {
+    els.leadTableBody.innerHTML = `<tr><td colspan="10" class="empty-state">No leads match the current filters.</td></tr>`;
+    return;
+  }
+
+  els.leadTableBody.innerHTML = filteredLeads
     .map((lead) => `
       <tr data-lead-row="${lead.id}">
         <td>${statusSelect(lead)}</td>
@@ -762,6 +938,23 @@ function renderLeadTable() {
   els.leadTableBody.querySelectorAll("input, select").forEach((field) => {
     field.addEventListener("change", handleLeadFieldChange);
     field.addEventListener("blur", handleLeadFieldChange);
+  });
+}
+
+function getFilteredLeads() {
+  const filters = state.leadFilters || defaultLeadFilters;
+  return state.leads.filter((lead) => {
+    if (filters.status && lead.status !== filters.status) return false;
+    if (filters.businessName && !includesText(lead.businessName, filters.businessName)) return false;
+    if (filters.category && !includesText(lead.category, filters.category)) return false;
+    if (filters.city && !includesText(lead.city, filters.city)) return false;
+    if (filters.website && !includesText(lead.website, filters.website)) return false;
+    if (filters.email && !includesText(lead.email, filters.email)) return false;
+    if (filters.problemFound && !includesText(lead.problemFound, filters.problemFound)) return false;
+    if (filters.template && lead.recommendedTemplate !== filters.template) return false;
+    if (filters.nextAction && !includesText(lead.nextAction, filters.nextAction)) return false;
+    if (filters.score && !matchesScoreFilter(lead.currentSiteScore, filters.score)) return false;
+    return true;
   });
 }
 
@@ -789,6 +982,7 @@ function handleLeadFieldChange(event) {
   if (!lead) return;
   lead[event.target.dataset.field] = event.target.value;
   saveState();
+  renderLeadTable();
   renderSelects();
   renderMetrics();
   renderPipeline();
@@ -815,7 +1009,7 @@ function renderTemplates() {
     button.addEventListener("click", () => {
       setActiveTab("populate");
       els.populateTemplateSelect.value = button.dataset.templatePreview;
-      generatePreview();
+      void generatePreview();
     });
   });
 }
@@ -836,6 +1030,7 @@ function renderSelects() {
   els.populateLeadSelect.innerHTML = leadOptions;
   els.outreachLeadSelect.innerHTML = leadOptions;
   els.populateTemplateSelect.innerHTML = templateOptions;
+  els.filterTemplate.innerHTML = `<option value="">All</option>${templateOptions}`;
 
   if (state.leads.some((lead) => lead.id === previousPopulateLead)) {
     els.populateLeadSelect.value = previousPopulateLead;
@@ -846,16 +1041,20 @@ function renderSelects() {
   if (state.templates.some((template) => template.id === previousTemplate)) {
     els.populateTemplateSelect.value = previousTemplate;
   }
+
+  if (state.templates.some((template) => template.id === state.leadFilters?.template)) {
+    els.filterTemplate.value = state.leadFilters.template;
+  }
 }
 
 function generateInitialPreview() {
   if (state.leads.length && state.templates.length) {
-    generatePreview({ saveToLead: false });
+    void generatePreview({ saveToLead: false });
     generateEmail();
   }
 }
 
-function generatePreview(options = {}) {
+async function generatePreview(options = {}) {
   const { saveToLead = true } = options;
   const lead = getSelectedLead(els.populateLeadSelect);
   const template = getSelectedTemplate();
@@ -864,23 +1063,26 @@ function generatePreview(options = {}) {
     return;
   }
 
-  const offer = els.populateOffer.value.trim();
-  const price = els.populatePrice.value.trim();
-  const merged = buildMergeData(lead, template, offer, price);
-  lastPreviewHtml = buildPreviewHtml(merged, template);
-  els.sitePreview.srcdoc = lastPreviewHtml;
-  els.generatedCopy.value = buildGeneratedCopy(merged);
+  try {
+    const { values, coverage, missing } = await buildTemplateData(lead, template);
+    lastPreviewHtml = await renderTemplatePreview(values, template);
+    els.sitePreview.srcdoc = lastPreviewHtml;
+    renderTemplateCoverage(coverage, missing);
 
-  if (saveToLead) {
-    lead.status = lead.status === "New" || lead.status === "Audited" || lead.status === "Qualified" ? "Preview Built" : lead.status;
-    lead.recommendedTemplate = template.id;
-    lead.previewUrl = "Generated in app";
-    lead.nextAction = "Send outreach";
-    saveState();
-    renderLeadTable();
-    renderMetrics();
-    renderPipeline();
-    showToast("Preview generated and saved to lead.");
+    if (saveToLead) {
+      lead.status = lead.status === "New" || lead.status === "Audited" || lead.status === "Qualified" ? "Preview Built" : lead.status;
+      lead.recommendedTemplate = template.id;
+      lead.previewUrl = "Generated in app";
+      lead.nextAction = "Send outreach";
+      saveState();
+      renderLeadTable();
+      renderMetrics();
+      renderPipeline();
+      showToast("Preview generated and saved to lead.");
+    }
+  } catch (error) {
+    console.error(error);
+    showToast(error.message || "Could not render the template preview.");
   }
 }
 
@@ -892,126 +1094,150 @@ function getSelectedTemplate() {
   return state.templates.find((template) => template.id === els.populateTemplateSelect.value) || state.templates[0];
 }
 
-function buildMergeData(lead, template, offer, price) {
+async function loadTemplateSource() {
+  if (templateSourceCache) return templateSourceCache;
+  const response = await fetch(templateSourcePath);
+  if (!response.ok) {
+    throw new Error(`Could not load template source (${response.status}).`);
+  }
+  templateSourceCache = await response.text();
+  return templateSourceCache;
+}
+
+function getTemplateDefaults(template, lead) {
+  const category = String(lead.category || template.name || "").toLowerCase();
+  const city = lead.city || "your area";
+  const businessName = lead.businessName || "Your Business";
+
+  const serviceSets = {
+    barber: ["Cut & style", "Colouring", "Grooming"],
+    salon: ["Cuts & colour", "Treatments", "Styling"],
+    plumber: ["Repairs", "Installations", "Emergency callouts"],
+    trade: ["Quote visits", "Emergency response", "Maintenance"],
+    cafe: ["Breakfast & brunch", "Coffee & drinks", "Takeaway"],
+    restaurant: ["Dining", "Takeaway", "Reservations"],
+    cleaner: ["Regular cleans", "Deep cleans", "End of tenancy"],
+    fitness: ["Personal training", "Classes", "Memberships"],
+    clinic: ["Appointments", "Treatments", "Advice"],
+    dental: ["Check-ups", "Hygiene", "Emergency appointments"]
+  };
+
+  const selectedServices = Object.entries(serviceSets).find(([key]) => category.includes(key));
+  const services = selectedServices ? selectedServices[1] : ["Core service", "Supporting service", "Local service"];
+
   return {
-    business_name: lead.businessName || "Your Business",
-    city: lead.city || "your area",
-    category: lead.category || template.niche,
-    primary_service: template.primaryService,
-    phone: lead.phone || "Your phone number",
-    website: lead.website || "",
-    email: lead.email || "",
-    booking_cta: "Book now",
-    quote_cta: "Request a quote",
-    trial_cta: "Book a trial",
-    reservation_cta: "Reserve a table",
-    service_area: lead.city || "your local area",
-    opening_hours: "Open hours shown clearly",
-    menu_link: "View menu",
-    emergency_phone: lead.phone || "Call now",
-    trust_badge: "Trusted local team",
-    review_snippet: "Friendly, professional service from a local team.",
-    signature_item: "Customer favourites highlighted here.",
-    programs: "Classes, coaching, and plans",
-    social_proof: "Reviews and testimonials placed near every CTA.",
-    patient_note: "Simple appointment information for new patients.",
-    problem_found: lead.problemFound || "The current online presence could convert more local visitors.",
-    pitch_angle: lead.personalizedPitchAngle || template.angle,
-    offer,
-    price,
-    cta: offer || template.angle
+    name: businessName,
+    phone: lead.phone || "Call to enquire",
+    email: lead.email || "hello@yourbusiness.com",
+    address: lead.formattedAddress || `${city}, local area`,
+    "hero-h1": lead.personalizedPitchAngle || `${businessName} in ${city}`,
+    "hero-sub": `A clear, mobile-first website for ${lead.category || template.name.toLowerCase()} customers in ${city}.`,
+    cta: lead.website ? "View services" : "Get a quote",
+    about: `${businessName} serves ${city} with reliable, friendly service and a straightforward customer journey.`,
+    "svc-1-name": services[0],
+    "svc-1-desc": `A clear ${services[0].toLowerCase()} offer built for people searching in ${city}.`,
+    "svc-2-name": services[1],
+    "svc-2-desc": `A strong page for ${services[1].toLowerCase()} and bookings or enquiries.`,
+    "svc-3-name": services[2],
+    "svc-3-desc": `A trusted local option for ${services[2].toLowerCase()} with fast contact details.`,
+    "why-1-title": "Clear contact route",
+    "why-1-desc": "Visitors can call, message, or book without hunting around the site.",
+    "why-2-title": "Mobile first",
+    "why-2-desc": "Built so the main actions still work well on a phone.",
+    "why-3-title": "Local trust",
+    "why-3-desc": `${businessName} feels like a real local option instead of a generic listing.`,
+    "review-1-text": lead.problemFound || "A local customer would likely respond well to a clearer site structure.",
+    "review-1-name": lead.businessName || "Customer 1",
+    "review-1-location": lead.formattedAddress || city,
+    "review-2-text": "Easy to scan, simple to contact, and focused on enquiries.",
+    "review-2-name": "Customer 2",
+    "review-2-location": city,
+    "footer-name": businessName,
+    year: String(new Date().getFullYear())
   };
 }
 
-function buildPreviewHtml(data, template) {
-  const [dark, accent, soft] = template.palette;
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(data.business_name)} preview</title>
-  <style>
-    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: ${dark}; background: #ffffff; }
-    .hero { min-height: 70vh; display: grid; align-items: center; padding: 48px 7vw; background: linear-gradient(115deg, ${soft}, #fff 60%); }
-    .hero-inner { max-width: 980px; }
-    .kicker { color: ${accent}; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
-    h1 { font-size: clamp(2.4rem, 7vw, 5.2rem); line-height: 0.95; margin: 12px 0 18px; letter-spacing: 0; }
-    p { font-size: 1.05rem; line-height: 1.55; max-width: 680px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-    a { color: inherit; }
-    .button { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 8px; text-decoration: none; font-weight: 800; }
-    .primary { background: ${accent}; color: #fff; }
-    .secondary { border: 1px solid rgba(0,0,0,.18); }
-    .band { padding: 42px 7vw; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .item { border-top: 3px solid ${accent}; padding-top: 14px; }
-    .item h2 { font-size: 1.05rem; margin: 0 0 8px; }
-    .item p { font-size: 0.95rem; margin: 0; }
-    .footer { padding: 26px 7vw; background: ${dark}; color: #fff; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    @media (max-width: 760px) { .band { grid-template-columns: 1fr; } }
-  </style>
-</head>
-<body>
-  <main>
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="kicker">${escapeHtml(data.category)} in ${escapeHtml(data.city)}</div>
-        <h1>${escapeHtml(data.business_name)}</h1>
-        <p>${escapeHtml(data.pitch_angle)}</p>
-        <p>${escapeHtml(data.offer)} ${data.price ? `Available ${escapeHtml(data.price)}.` : ""}</p>
-        <div class="actions">
-          <a class="button primary" href="tel:${escapeAttr(data.phone)}">${escapeHtml(data.phone)}</a>
-          <a class="button secondary" href="#contact">${escapeHtml(data.booking_cta || data.quote_cta)}</a>
-        </div>
-      </div>
-    </section>
-    <section class="band">
-      <article class="item">
-        <h2>${escapeHtml(data.primary_service)}</h2>
-        <p>Clear services, pricing prompts, and location details for people ready to act.</p>
-      </article>
-      <article class="item">
-        <h2>Built for mobile</h2>
-        <p>Fast pages, visible calls to action, and simple contact routes on every screen size.</p>
-      </article>
-      <article class="item">
-        <h2>Local trust</h2>
-        <p>${escapeHtml(data.review_snippet || data.trust_badge || data.social_proof)}</p>
-      </article>
-    </section>
-  </main>
-  <footer class="footer" id="contact">
-    <strong>${escapeHtml(data.business_name)}</strong>
-    <span>${escapeHtml(data.city)} | ${escapeHtml(data.phone)}</span>
-  </footer>
-</body>
-</html>`;
+async function buildTemplateData(lead, template) {
+  const values = getTemplateDefaults(template, lead);
+  const coverage = templateFieldGuide.map((field) => {
+    let source = "fallback";
+    let value = values[field.key];
+    if (field.key === "name") {
+      source = lead.businessName ? "lead" : "fallback";
+    } else if (field.key === "phone") {
+      source = lead.phone ? "lead" : "fallback";
+    } else if (field.key === "email") {
+      source = lead.email ? "lead" : "fallback";
+    } else if (field.key === "address") {
+      source = lead.formattedAddress ? "lead" : "fallback";
+    } else if (field.key === "hero-h1" || field.key === "hero-sub" || field.key === "cta" || field.key === "about") {
+      source = lead.personalizedPitchAngle ? "lead" : "fallback";
+    }
+
+    if (!value) {
+      source = "missing";
+      value = "";
+    }
+
+    return {
+      ...field,
+      value,
+      source
+    };
+  });
+
+  const missing = coverage.filter((item) => item.source === "missing").map((item) => item.label);
+  return { values, coverage, missing };
 }
 
-function buildGeneratedCopy(data) {
-  return `Preview concept for ${data.business_name}
+async function renderTemplatePreview(values) {
+  const html = await loadTemplateSource();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
 
-Main angle:
-${data.pitch_angle}
+  templateFieldGuide.forEach(({ key }) => {
+    const nodes = Array.from(doc.querySelectorAll("[data-adm]")).filter((node) => node.getAttribute("data-adm") === key);
+    nodes.forEach((node) => {
+      if (key === "phone" || key === "email") {
+        node.textContent = values[key] || "";
+      } else {
+        node.textContent = values[key] || "";
+      }
+    });
+  });
 
-Offer:
-${data.offer}
+  const leadPhone = values.phone || "";
+  const leadEmail = values.email || "";
+  doc.querySelectorAll('[data-adm="phone"]').forEach((node) => {
+    const anchor = node.closest("a");
+    if (anchor) anchor.setAttribute("href", `tel:${leadPhone.replace(/[^\d+]/g, "")}`);
+  });
+  doc.querySelectorAll('[data-adm="email"]').forEach((node) => {
+    const anchor = node.closest("a");
+    if (anchor) anchor.setAttribute("href", `mailto:${leadEmail}`);
+  });
 
-Key page sections:
-- Hero: ${data.business_name} in ${data.city}
-- Services: ${data.primary_service}
-- Trust: ${data.review_snippet || data.trust_badge || data.social_proof}
-- CTA: ${data.phone}
+  const title = doc.querySelector("title");
+  if (title) title.textContent = `${values.name} preview`;
+  return "<!doctype html>\n" + doc.documentElement.outerHTML;
+}
 
-Known opportunity:
-${data.problem_found}
-
-Placeholder values used:
-{{business_name}} = ${data.business_name}
-{{city}} = ${data.city}
-{{primary_service}} = ${data.primary_service}
-{{phone}} = ${data.phone}
-{{booking_cta}} = ${data.booking_cta}`;
+function renderTemplateCoverage(coverage, missing) {
+  if (!els.templateCoverage) return;
+  const missingSummary = missing.length ? `<div class="coverage-note warning">Missing: ${escapeHtml(missing.join(", "))}</div>` : `<div class="coverage-note ok">All template fields are populated.</div>`;
+  els.templateCoverage.innerHTML = `
+    ${missingSummary}
+    ${coverage
+      .map(
+        (item) => `
+          <div class="coverage-item">
+            <strong>${escapeHtml(item.label)}</strong>
+            <span>${escapeHtml(item.source)}${item.value ? ` · ${escapeHtml(item.value)}` : ""}</span>
+          </div>
+        `
+      )
+      .join("")}
+  `;
 }
 
 function saveOutreachSettings() {
@@ -1177,6 +1403,14 @@ function downloadLeadsCsv() {
       lead.source,
       lead.sourceUrl,
       lead.placeId,
+      lead.formattedAddress,
+      lead.googleMapsUrl,
+      lead.businessStatus,
+      lead.rating,
+      lead.reviewsCount,
+      lead.priceLevel,
+      lead.openingHours,
+      lead.types,
       lead.currentSiteScore,
       lead.hasWebsite,
       lead.mobileFriendly,
@@ -1236,6 +1470,14 @@ function leadFromCsvRow(headers, row) {
     source: get("Source"),
     sourceUrl: get("Source URL"),
     placeId: get("Place ID"),
+    formattedAddress: get("Formatted Address"),
+    googleMapsUrl: get("Google Maps URL"),
+    businessStatus: get("Business Status"),
+    rating: get("Rating"),
+    reviewsCount: get("Reviews Count"),
+    priceLevel: get("Price Level"),
+    openingHours: get("Opening Hours"),
+    types: get("Types"),
     currentSiteScore: get("Current Site Score"),
     hasWebsite: get("Has Website"),
     mobileFriendly: get("Mobile Friendly") || "Unknown",
@@ -1325,6 +1567,14 @@ function normalizeLead(lead) {
     source: lead.source || "",
     sourceUrl: lead.sourceUrl || "",
     placeId: lead.placeId || "",
+    formattedAddress: lead.formattedAddress || lead.address || lead.city || "",
+    googleMapsUrl: lead.googleMapsUrl || "",
+    businessStatus: lead.businessStatus || "",
+    rating: lead.rating || "",
+    reviewsCount: lead.reviewsCount || "",
+    priceLevel: lead.priceLevel || "",
+    openingHours: lead.openingHours || "",
+    types: lead.types || "",
     currentSiteScore: lead.currentSiteScore ?? "",
     hasWebsite: lead.hasWebsite || (lead.website ? "Yes" : "No"),
     mobileFriendly: lead.mobileFriendly || "Unknown",
@@ -1385,6 +1635,28 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "") || "item";
+}
+
+function includesText(value, needle) {
+  return String(value ?? "").toLowerCase().includes(String(needle ?? "").toLowerCase());
+}
+
+function matchesScoreFilter(value, filterText) {
+  const text = String(filterText || "").trim();
+  if (!text) return true;
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) return false;
+  const match = text.match(/^(>=|<=|>|<|=)?\s*(\d+(?:\.\d+)?)$/);
+  if (!match) {
+    return String(value ?? "").toLowerCase().includes(text.toLowerCase());
+  }
+  const operator = match[1] || "=";
+  const target = Number(match[2]);
+  if (operator === ">=") return numeric >= target;
+  if (operator === "<=") return numeric <= target;
+  if (operator === ">") return numeric > target;
+  if (operator === "<") return numeric < target;
+  return numeric === target;
 }
 
 function firstWord(value) {

@@ -272,6 +272,44 @@ button {
   font-size: 0.9rem;
 }
 
+.places-guide {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.places-guide summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.places-guide-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.places-guide-grid div {
+  display: grid;
+  gap: 4px;
+}
+
+.places-guide-grid strong {
+  color: var(--accent-strong);
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.places-guide-grid span {
+  color: var(--muted);
+  line-height: 1.45;
+  font-size: 0.88rem;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -367,6 +405,34 @@ th {
   text-transform: uppercase;
 }
 
+.filter-row th {
+  top: 33px;
+  background: #fbfcfe;
+  text-transform: none;
+  padding: 8px 10px;
+}
+
+.filter-row input,
+.filter-row select {
+  min-width: 0;
+  width: 100%;
+  padding: 7px 8px;
+  font-size: 0.8rem;
+}
+
+.filter-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.tiny-button {
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
 td input,
 td select {
   min-width: 120px;
@@ -445,6 +511,47 @@ tr:last-child td {
 .email-box {
   min-height: 260px;
   resize: vertical;
+  line-height: 1.45;
+}
+
+.coverage-list {
+  display: grid;
+  gap: 10px;
+}
+
+.coverage-note {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.coverage-note.ok {
+  background: #e1f5ea;
+  color: var(--success);
+}
+
+.coverage-note.warning {
+  background: #fff2d8;
+  color: var(--warn);
+}
+
+.coverage-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.coverage-item strong {
+  font-size: 0.9rem;
+}
+
+.coverage-item span {
+  color: var(--muted);
+  font-size: 0.88rem;
   line-height: 1.45;
 }
 
