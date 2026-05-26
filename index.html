@@ -280,15 +280,17 @@
               <div class="button-row">
                 <button class="primary-button" type="submit">Generate preview</button>
                 <button class="ghost-button" id="downloadPreviewButton" type="button">Download HTML</button>
+                <button class="ghost-button" id="fullscreenButton" type="button">Fullscreen</button>
               </div>
             </form>
 
-            <div class="panel">
+            <div class="panel" id="coveragePanel">
               <div class="panel-header">
                 <div>
                   <h3>Template coverage</h3>
                   <p>Shows which template fields are populated from lead data, defaults, or still need a human touch.</p>
                 </div>
+                <button class="ghost-button tiny-button" id="toggleCoverageButton" type="button">Collapse</button>
               </div>
               <div id="templateCoverage" class="coverage-list"></div>
             </div>

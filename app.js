@@ -352,6 +352,9 @@ function cacheElements() {
     "downloadPreviewButton",
     "sitePreview",
     "templateCoverage",
+    "coveragePanel",
+    "toggleCoverageButton",
+    "fullscreenButton",
     "outreachSettingsForm",
     "senderName",
     "fromEmail",
@@ -427,6 +430,74 @@ function bindEvents() {
     event.preventDefault();
     void generatePreview();
   });
+
+  els.toggleCoverageButton.addEventListener("click", () => {
+    const isCollapsed = els.coveragePanel.classList.toggle("collapsed");
+    els.toggleCoverageButton.textContent = isCollapsed ? "Expand" : "Collapse";
+  });
+
+  els.fullscreenButton.addEventListener("click", () => {
+    if (!els.sitePreview) return;
+    if (!document.fullscreenElement) {
+      els.sitePreview.requestFullscreen().catch((err) => {
+        showToast(`Fullscreen error: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  if (els.templateCoverage) {
+    els.templateCoverage.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!target.classList.contains("coverage-input")) return;
+      const key = target.dataset.fieldKey;
+      const value = target.value;
+
+      const lead = getSelectedLead(els.populateLeadSelect);
+      if (!lead) return;
+
+      lead.customTemplateFields = lead.customTemplateFields || {};
+      lead.customTemplateFields[key] = value;
+
+      const itemEl = target.closest(".coverage-item");
+      if (itemEl) {
+        const badge = itemEl.querySelector(".source-badge");
+        if (badge) {
+          badge.textContent = "custom";
+          badge.className = "source-badge custom";
+        }
+        const actions = itemEl.querySelector(".coverage-item-actions");
+        if (actions && !actions.querySelector(".reset-field-button")) {
+          const resetBtn = document.createElement("button");
+          resetBtn.type = "button";
+          resetBtn.className = "reset-field-button";
+          resetBtn.dataset.resetKey = key;
+          resetBtn.title = "Reset to default";
+          resetBtn.textContent = "Reset";
+          actions.appendChild(resetBtn);
+        }
+      }
+
+      void updateLivePreview();
+    });
+
+    els.templateCoverage.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!target.classList.contains("reset-field-button")) return;
+      const key = target.dataset.resetKey;
+
+      const lead = getSelectedLead(els.populateLeadSelect);
+      if (!lead) return;
+
+      if (lead.customTemplateFields) {
+        delete lead.customTemplateFields[key];
+      }
+
+      saveState();
+      void generatePreview({ saveToLead: false });
+    });
+  }
 
   els.downloadPreviewButton.addEventListener("click", () => {
     if (!lastPreviewHtml) {
@@ -1130,7 +1201,7 @@ function getTemplateDefaults(template, lead) {
     phone: lead.phone || "Call to enquire",
     email: lead.email || "hello@yourbusiness.com",
     address: lead.formattedAddress || `${city}, local area`,
-    "hero-h1": lead.personalizedPitchAngle || `${businessName} in ${city}`,
+    "hero-h1": businessName,
     "hero-sub": `A clear, mobile-first website for ${lead.category || template.name.toLowerCase()} customers in ${city}.`,
     cta: lead.website ? "View services" : "Get a quote",
     about: `${businessName} serves ${city} with reliable, friendly service and a straightforward customer journey.`,
@@ -1158,11 +1229,23 @@ function getTemplateDefaults(template, lead) {
 }
 
 async function buildTemplateData(lead, template) {
+  lead.customTemplateFields = lead.customTemplateFields || {};
   const values = getTemplateDefaults(template, lead);
+
+  // Overwrite values with lead.customTemplateFields if they exist
+  Object.keys(lead.customTemplateFields).forEach((key) => {
+    if (lead.customTemplateFields[key] !== undefined && lead.customTemplateFields[key] !== null) {
+      values[key] = lead.customTemplateFields[key];
+    }
+  });
+
   const coverage = templateFieldGuide.map((field) => {
     let source = "fallback";
     let value = values[field.key];
-    if (field.key === "name") {
+
+    if (lead.customTemplateFields && lead.customTemplateFields[field.key] !== undefined && lead.customTemplateFields[field.key] !== null) {
+      source = "custom";
+    } else if (field.key === "name") {
       source = lead.businessName ? "lead" : "fallback";
     } else if (field.key === "phone") {
       source = lead.phone ? "lead" : "fallback";
@@ -1174,7 +1257,7 @@ async function buildTemplateData(lead, template) {
       source = lead.personalizedPitchAngle ? "lead" : "fallback";
     }
 
-    if (!value) {
+    if (!value && source !== "custom") {
       source = "missing";
       value = "";
     }
@@ -1222,17 +1305,58 @@ async function renderTemplatePreview(values) {
   return "<!doctype html>\n" + doc.documentElement.outerHTML;
 }
 
+function isLongField(key) {
+  return key === "about" || key.endsWith("-desc") || key.endsWith("-text");
+}
+
+function updateCoverageWarning(missing) {
+  const warningContainer = document.getElementById("coverageWarningContainer");
+  if (!warningContainer) return;
+  warningContainer.innerHTML = missing.length
+    ? `<div class="coverage-note warning">Missing: ${escapeHtml(missing.join(", "))}</div>`
+    : `<div class="coverage-note ok">All template fields are populated.</div>`;
+}
+
+async function updateLivePreview() {
+  const lead = getSelectedLead(els.populateLeadSelect);
+  const template = getSelectedTemplate();
+  if (!lead || !template) return;
+
+  try {
+    const { values, coverage, missing } = await buildTemplateData(lead, template);
+    lastPreviewHtml = await renderTemplatePreview(values, template);
+    els.sitePreview.srcdoc = lastPreviewHtml;
+
+    updateCoverageWarning(missing);
+    saveState();
+  } catch (error) {
+    console.error("Live preview error:", error);
+  }
+}
+
 function renderTemplateCoverage(coverage, missing) {
   if (!els.templateCoverage) return;
-  const missingSummary = missing.length ? `<div class="coverage-note warning">Missing: ${escapeHtml(missing.join(", "))}</div>` : `<div class="coverage-note ok">All template fields are populated.</div>`;
+  const warningHtml = missing.length
+    ? `<div class="coverage-note warning">Missing: ${escapeHtml(missing.join(", "))}</div>`
+    : `<div class="coverage-note ok">All template fields are populated.</div>`;
+
   els.templateCoverage.innerHTML = `
-    ${missingSummary}
+    <div id="coverageWarningContainer">${warningHtml}</div>
     ${coverage
       .map(
         (item) => `
-          <div class="coverage-item">
-            <strong>${escapeHtml(item.label)}</strong>
-            <span>${escapeHtml(item.source)}${item.value ? ` · ${escapeHtml(item.value)}` : ""}</span>
+          <div class="coverage-item" data-key="${escapeAttr(item.key)}">
+            <div class="coverage-item-header">
+              <span class="coverage-label">${escapeHtml(item.label)}</span>
+              <div class="coverage-item-actions">
+                <span class="source-badge ${escapeAttr(item.source)}">${escapeHtml(item.source)}</span>
+                ${item.source === "custom" ? `<button class="reset-field-button" type="button" data-reset-key="${escapeAttr(item.key)}" title="Reset to default">Reset</button>` : ""}
+              </div>
+            </div>
+            ${isLongField(item.key)
+              ? `<textarea class="coverage-input" rows="2" data-field-key="${escapeAttr(item.key)}">${escapeHtml(item.value)}</textarea>`
+              : `<input type="text" class="coverage-input" value="${escapeAttr(item.value)}" data-field-key="${escapeAttr(item.key)}">`
+            }
           </div>
         `
       )
@@ -1592,7 +1716,8 @@ function normalizeLead(lead) {
     followUpDate: lead.followUpDate || "",
     reply: lead.reply || "",
     nextAction: lead.nextAction || "",
-    notes: lead.notes || ""
+    notes: lead.notes || "",
+    customTemplateFields: lead.customTemplateFields || {}
   };
 }
 
